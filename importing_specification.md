@@ -90,6 +90,9 @@ In the Javascript world, it is common to have a `node_modules` folder with 10k f
 
 We also recommend supporting language specific package managers, such as `cargo` for Rust, and `npm` for Javascript. This makes it easier for users to consume shaders, and makes sense for ecosystem-specific tools.
 
+TODO: Is .toml the best file format for this? Alternatives would be
+- JSON (or JSON5?)
+- YAML (well, StrictYAML)
 
 TODO: How should the importing syntax work?
 - Have re-exports or similar. I never want to be forced to write `module::submodule::anotherone::help::pls::my_func()`.
