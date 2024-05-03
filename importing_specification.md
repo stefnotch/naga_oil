@@ -26,6 +26,8 @@ One can either import a whole module, or only specific functions.
 #import my::module::{func1, func2 as foobar};
 ```
 
+TODO: Explain that we either need #export, or that we need the curly brackets around functions.
+
 These can then be used
 
 ```
@@ -44,7 +46,6 @@ Relative paths are also supported, so one can import a shader from a different d
 #import super::my::module;
 #import super::super::other::module;
 ```
-
 
 ## Variant B - Guide-level explanation
 
@@ -112,6 +113,8 @@ Explain the proposal as if it was already included in the language and you were 
 For implementation-oriented RFCs (e.g. for compiler internals), this section should focus on how compiler contributors should think about the change, and give examples of its concrete impact. For policy RFCs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
 
 # TODO: Reference-level explanation
+
+TODO: Explain name mangling
 
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
