@@ -13,26 +13,89 @@ One important aspect is getting buy-in from **WGSL language servers**, as shader
 
 We also should account for **importing shader from libraries**. Ideally, users could upload WGSL shaders to existing package managers, which other users could then consume. 
 
-Finally, we want **multiple tools** which can compile WGSL-with-imports down to raw WGSL. We should not make it ecosystem specific.
+Finally, we want **multiple tools** which can compile WGSL-with-imports down to raw WGSL. I personally am using using WGSL both in Rust projects, and in web projects. We should not make it ecosystem specific.
+
+## Variant A - Guide-level explanation
+
+This variant is based on Rust syntax.
+
+One can either import a whole module, or only specific functions.
+
+```
+#import bevy_ui;
+#import my::module::{func1, func2 as foobar};
+```
+
+These can then be used
+
+```
+fn main() {
+    bevy_ui::sphere(vec2f(0.0, 1.0), 1.0);
+    let a = func1(3);
+}
+```
+
+Both `bevy_ui` and `my` are packages in the current project. Tools can look in a `Wgsl.toml` file to find the location of the packages.
+This lets libraries be published to package managers, and users can import them with a simple syntax.
+
+Relative paths are also supported, so one can import a shader from a different directory.
+
+```
+#import super::my::module;
+#import super::super::other::module;
+```
+
+
+## Variant B - Guide-level explanation
+
+This variant is based on Typescript syntax.
+
+One can either import a whole module, or only specific functions.
+
+```
+import bevy_ui;
+import { func1, func2 as foobar } from "my/module";
+```
+
+These can then be used
+
+```
+fn main() {
+    bevy_ui::sphere(vec2f(0.0, 1.0), 1.0);
+    let a = func1(3);
+}
+```
+
+Relative paths are also supported, so one can import a shader from a different directory.
+
+```
+import { bar } from "../my/module";
+```
+
+## `Wgsl.toml` file
+
+The `Wgsl.toml` file is a configuration file that tells the language server where to find the packages. It is similar to a `Cargo.toml` file in that regard.
+
+```toml
+edition = "2024"
+
+[dependencies]
+bevy_ui = { cargo = "bevy_ui" }
+my = { path = "./relative/path" }
+shader_wiz = { path = "./node_modules/shader_wiz/src/main.wgsl" }
+``` 
+
+We specify the paths instead of scanning folders for `*.wgsl` files. 
+In the Javascript world, it is common to have a `node_modules` folder with 10k files, which is not practical for a language server to scan.
+
+We also recommend supporting language specific package managers, such as `cargo` for Rust, and `npm` for Javascript. This makes it easier for users to consume shaders, and makes sense for ecosystem-specific tools.
+
 
 TODO: How should the importing syntax work?
-- We need a language server to be able to discover shaders *without* scanning all files. 
-  - Either it can look at an import, and figure out the location. (~relative imports)
-  - Or there's another file that tells it how to resolve imports. (~import maps and Cargo.toml)
-- Portable. We shouldn't pick a syntax that is platform-specific
-  - For instance, relying on symbols that aren't valid in Windows file names is not ideal.
-- Not dump everything in the global namespace.
-- Have a syntax for importing a function with an already used name.
-  - Import renaming, or fully qualified paths would work. But remember that I don't ever want to have to write `module::submodule::anotherone::help::pls::my_func()`.
-- Granular. It should be possible to only import certain things.
-  - Either scoping like `import module` followed by `module::my_func()` or granular imports `import my_func from module` would do the job.
 - Have re-exports or similar. I never want to be forced to write `module::submodule::anotherone::help::pls::my_func()`.
-- Not conflict with WGSL syntax
 
-TODO: Look up at how other programming languages justify their features.
-TODO: Ask the naga_oil peeps.
 
-# Guide-level explanation
+# TODO: Guide-level explanation
 
 Explain the proposal as if it was already included in the language and you were teaching it to another Rust programmer. That generally means:
 
@@ -45,7 +108,7 @@ Explain the proposal as if it was already included in the language and you were 
 
 For implementation-oriented RFCs (e.g. for compiler internals), this section should focus on how compiler contributors should think about the change, and give examples of its concrete impact. For policy RFCs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
 
-# Reference-level explanation
+# TODO: Reference-level explanation
 
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
@@ -55,11 +118,11 @@ This is the technical portion of the RFC. Explain the design in sufficient detai
 
 The section should return to the examples given in the previous section, and explain more fully how the detailed proposal makes those examples work.
 
-# Drawbacks
+# TODO: Drawbacks
 
 Why should we not do this?
 
-# Rationale and alternatives
+# TODO: Rationale and alternatives
 
 - Why is this design the best in the space of possible designs?
 - What other designs have been considered and what is the rationale for not choosing them?
@@ -105,7 +168,7 @@ The downside is using additional tooling, and dealing with an additional transla
 
 This is always a trade-off, and I believe that offering multiple solid choices is the ideal option.
 
-# Prior art
+# TODO: Prior art
 
 Discuss prior art, both the good and the bad, in relation to this proposal. A few examples of what this can include are:
 
@@ -118,7 +181,7 @@ This section is intended to encourage you as an author to think about the lesson
 
 Note that while precedent set by other languages is some motivation, it does not on its own motivate an RFC. Please also take into consideration that rust sometimes intentionally diverges from common language features.
 
-# Unresolved questions
+# TODO: Unresolved questions
 
 - What parts of the design do you expect to resolve through the RFC process before this gets merged?
 - What parts of the design do you expect to resolve through the implementation of this feature before stabilization?
@@ -126,14 +189,22 @@ Note that while precedent set by other languages is some motivation, it does not
 
 # Future possibilities
 
-- Doc comment syntax
-- pub, private, ...
-- integrate with source maps (WGSL has those, right?)
+## Visibility
 
-Think about what the natural extension and evolution of your proposal would be and how it would affect the language and project as a whole in a holistic way. Try to use this section as a tool to more fully consider all possible interactions with the project and language in your proposal. Also consider how this all fits into the roadmap for the project and of the relevant sub-team.
+One natural extension of this proposal is to add visibility modifiers to WGSL. This would allow users to hide certain functions or structs from the outside world, which would be very useful for library authors. The syntax for this could be
+- `pub fn my_func() { ... }`: Copying Rust
+- `@export struct MyStruct { ... }`: Syntax used by [usegpu](https://usegpu.live/docs/reference-library-@use-gpu-shader)
+- `#export`: A preprocessor macro, [wgsl-linker](https://github.com/mighdoll/wgsl-linker) implements this syntax
+- `fn<export> my_func() { ... }`: Using the WGSL convention of using angle brackets for modifiers
 
-This is also a good place to "dump ideas", if they are out of scope for the RFC you are writing but otherwise related.
+## Documentation comments
 
-If you have tried and cannot think of any future possibilities, you may simply state that you cannot think of anything.
+One natural extension of this proposal is to add documentation comments to WGSL. This would allow users to document their shaders, which would be very useful for library authors.
 
-Note that having something written down in the future-possibilities section is not a reason to accept the current or a future RFC; such notes should be in the section on motivation or rationale in this or subsequent RFCs. The section merely provides additional information.
+## Source maps
+
+We encourage tooling authors to also implement source maps when implementing imports.
+
+## Preprocessor
+
+How a future preprocessor proposal would interact with this proposal is an open question.
