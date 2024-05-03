@@ -89,13 +89,13 @@ One drawback is that importing the same shader multiple times, which can also ha
 // lighting.wgsl
 #include <math.wgsl>
 ```
-would not work, since anything defined in `math.wgsl` would be imported twice. In C-land, this is solved by using include guards. (TODO: check if the name is correct)
+would not work, since anything defined in `math.wgsl` would be imported twice. In C-land, this is solved by using *include guards*.
 
 
-Another drawback is that using the same name twice is impossible. In C-land, this leads to pseudo-namespaces, where major libraries will prefix all of their functions with a few symbols. An example of this is the Vulkan API `vkBlabla` (TODO: examples from vk API)
+Another drawback is that using the same name twice is impossible. In C-land, this leads to pseudo-namespaces, where major libraries will prefix all of their functions with a few symbols. An example of this is the Vulkan API `vkBeginCommandBuffer` or `vkCmdDraw`.
 
-A future drawback is that "privacy" or "visibility" becomes very difficult to implement. Everything that is importing is automatically public and easily accessible.
-In C-land, the workaround is header files. In other languages, such as Python, the convention ends up being "anything prefixed with an underscore `_` is private".
+A future drawback is that "privacy" or "visibility" becomes very difficult to implement. Everything that is imported is automatically public and easily accessible.
+In C-land, the workaround is using header files. In other languages, such as Python, the convention ends up being "anything prefixed with an underscore `_` is private".
 
 ## Using a higher level language
 
