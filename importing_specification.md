@@ -47,6 +47,10 @@ Relative paths are also supported, so one can import a shader from a different d
 #import super::super::other::module;
 ```
 
+The name `#import` could also be changed to `#use` or `use`, to match the Rust convention. We should also consider how it interacts with a preprocessor, for example `use` without a hashtag might imply that it's not being analyzed in the preprocessing stage.
+Do note that a general preprocessor is not part of this proposal.
+
+
 ## Variant B - Guide-level explanation
 
 This variant is based on Typescript syntax.
