@@ -119,6 +119,7 @@ For implementation-oriented RFCs (e.g. for compiler internals), this section sho
 # TODO: Reference-level explanation
 
 TODO: Explain name mangling
+TODO: When I import foo, and it uses a type FooBar, then FooBar is implicitly imported as well. However, the user cannot type "FooBar" in the source code, because it hasn't been explicitly imported.
 
 This is the technical portion of the RFC. Explain the design in sufficient detail that:
 
