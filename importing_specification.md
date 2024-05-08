@@ -58,7 +58,7 @@ This variant is based on Typescript syntax.
 One can either import a whole module, or only specific functions.
 
 ```
-import * from "bevy_ui";
+import * as bevy_ui from "bevy_ui";
 import { func1, func2 as foobar } from "my/module";
 ```
 
