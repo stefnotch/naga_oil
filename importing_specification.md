@@ -58,7 +58,7 @@ This variant is based on Typescript syntax.
 One can either import a whole module, or only specific functions.
 
 ```
-import bevy_ui;
+import * from "bevy_ui";
 import { func1, func2 as foobar } from "my/module";
 ```
 
@@ -196,6 +196,10 @@ Note that while precedent set by other languages is some motivation, it does not
 - What parts of the design do you expect to resolve through the RFC process before this gets merged?
 - What parts of the design do you expect to resolve through the implementation of this feature before stabilization?
 - What related issues do you consider out of scope for this RFC that could be addressed in the future independently of the solution that comes out of this RFC?
+
+# TODO: Test cases
+
+We should have a repository with lots of shared test cases for implementations.
 
 # Future possibilities
 
